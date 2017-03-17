@@ -20,10 +20,10 @@ int main()
 	int exSize = 28, exImageAmount = 100, exLabelsAmount = 100, amountOfWorkingEx = 10;
 	int dataAmount = 0, dataLabelsAmount = 0, dataSize = 0, amountOfWorkingData = 5;
 
-	string exDataPath = "C:\\Users\\Dell\\Desktop\\Give\\Data\\t10k-images.idx3-ubyte";
-	string exLabelsPath = "C:\\Users\\Dell\\Desktop\\Give\\Data\\t10k-labels.idx1-ubyte";
-	string dataPath = "C:\\Users\\Dell\\Desktop\\Give\\Data\\train-images.idx3-ubyte";
-	string dataLabelsPath = "C:\\Users\\Dell\\Desktop\\Give\\Data\\train-labels.idx1-ubyte";
+	string exDataPath = "\\Data\\t10k-images.idx3-ubyte";
+	string exLabelsPath = "\\Data\\t10k-labels.idx1-ubyte";
+	string dataPath = "\\Data\\train-images.idx3-ubyte";
+	string dataLabelsPath = "\\Data\\train-labels.idx1-ubyte";
 
 	uchar** example = read_mnist_images(exDataPath, exImageAmount, exSize);
 	uchar* exampleLabels = read_mnist_labels(exLabelsPath, exLabelsAmount);
