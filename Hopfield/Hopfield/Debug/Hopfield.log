@@ -1,0 +1,7 @@
+﻿  Network.cpp
+d:\vistudio\labs\hopfield\hopfield\network.cpp(124): warning C4018: '<': signed/unsigned mismatch
+d:\vistudio\labs\hopfield\hopfield\network.cpp(144): warning C4018: '<': signed/unsigned mismatch
+d:\vistudio\labs\hopfield\hopfield\network.cpp(169): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+d:\vistudio\labs\hopfield\hopfield\network.cpp(215): warning C4018: '<': signed/unsigned mismatch
+  Hopfield.vcxproj -> D:\ViStudio\Labs\Hopfield\Debug\Hopfield.exe
+  Hopfield.vcxproj -> D:\ViStudio\Labs\Hopfield\Debug\Hopfield.pdb (Full PDB)
