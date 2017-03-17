@@ -1,16 +1,5 @@
 #include "Network.h"
 
-
-void show(vector<int>&arr)
-{
-		for (int j = 0; j < 784; j++)
-		{
-			if (j % 28 == 0) cout << endl;
-			cout << arr[j];
-		}
-}
-
-
 namespace network
 {
 	uchar** read_mnist_images(string full_path, int& number_of_images, int& image_size)
@@ -78,17 +67,13 @@ namespace network
 		}
 	}
 
-	void SeparateData(uchar ** data, vector<vector<int>> &lines, const int size)
+	void SeparateData(uchar ** data, vector<vector<int>> &lines, const int size, int dataSize)
 	{
 		lines.resize(size);
 
 		for (int i = 0; i < size; i++)
 		{
-			lines[i].resize(784);
-		}
-
-		for (int i = 0; i < size; i++)
-		{
+			lines[i].resize(dataSize);
 			for (int j = 0; j < 784; j++)
 			{
 				if (data[i][j] == 0) lines[i][j] = -1;
@@ -97,29 +82,30 @@ namespace network
 		}
 	}
 
-	void LearnMatrix(vector<vector<int>> &data, vector<vector<double>> &toLearn)
+	int GetSum(vector<double>& op1, vector<int>& op2)
 	{
-		toLearn.resize(784);
-		for (int i = 0; i < 784; i++)
+		double result = 0;
+		for (int i = 0; i < op1.size(); i++)
 		{
-			toLearn[i].resize(784);
+			result += op1[i] * op2[i];
+		}
+		if (result > 0)
+			return 1;
+		else return -1;
+	}
+
+	void LearnMatrix(vector<vector<int>> &data, vector<vector<double>> &toLearn, int imageSize)
+	{
+		toLearn.resize(imageSize);
+		for (int i = 0; i < imageSize; i++)
+		{
+			toLearn[i].resize(imageSize);
 		}
 
-
-		/*std::thread thread1(LearningCalc, std::ref(data), std::ref(toLearn), 0, 195);
-		thread1.join();
-		std::thread thread2(LearningCalc, std::ref(data), std::ref(toLearn), 196, 392);
-		thread2.join();
-		std::thread thread3(LearningCalc, std::ref(data), std::ref(toLearn), 393, 588);
-		thread3.join();
-		std::thread thread4(LearningCalc, std::ref(data), std::ref(toLearn), 589, 784);
-		thread4.join();*/
-
-		for (int i = 0; i < 784; i++)
+		double koeff = 0;
+		for (int i = 0; i < imageSize; i++)
 		{
-			double koeff = 0;
-			toLearn[i][i] = 0;
-			for (int j = i + 1; j < 784; j++)
+			for (int j = i + 1; j < imageSize; j++)
 			{
 				for (int k = 0; k < data.size(); k++)
 				{
@@ -129,97 +115,38 @@ namespace network
 				toLearn[j][i] = koeff;
 				koeff = 0;
 			}
-		}
-	}
-
-
-	void LearningCalc(vector<vector<int>> &data, vector<vector<double>> &toLearn, int downRange, int upperRange)
-	{
-		for (int i = downRange; i < upperRange; i++)
-		{
-			double koeff = 0;
 			toLearn[i][i] = 0;
-			for (int j = i + 1; j < 784; j++)
-			{
-				for (int k = 0; k < data.size(); k++)
-				{
-					koeff += data[k][j] * data[k][i];
-				}
-				toLearn[i][j] = toLearn[j][i] = koeff;
-				koeff = 0;
-			}
 		}
 	}
 
-	void Execute(vector<int> &data, vector<vector<double>> &learnedMatrix)
+	void Execute(vector<int> &data, vector<vector<double>> &learnedMatrix, int imageSize)
 	{
 		vector<int> ndata;
-		ndata.resize(784);
+		//vector<int>prevdata; - compair x + 1 and x - 1 data 
+		ndata.resize(imageSize);
 		double koeff = 0;
-		bool flag = 0;
+		bool flag = false;
 		int counter = 0;
+		
 		while (!flag)
 		{
-			for (int i = 0; i < 784; i++)
+			for (int i = 0; i < imageSize; i++)
 			{
-				for (int j = 0; j < 784; j++)
-				{
-					koeff += learnedMatrix[j][i] * data[j];
-				}
+				koeff = GetSum(learnedMatrix[i], data);
 				ndata[i] = koeff;
-				koeff = 0;
 			}
 
-
-			cout << "ndata: ";
-			show(ndata);
-			cout << endl << endl;
-			Normalize(ndata);
-			cout << "normalized data: ";
-			show(ndata);
-			cout << endl << endl;
-			cout << "input: ";
-			show(data);
-			cout << endl << endl;
-
-
-		//	if (data == ndata)
-			//	flag = true;
-			int delta = 0;
-			for (int i = 0; i < 784; i++)
+			if (ndata == data)
 			{
-				if (ndata[i] != data[i])
-					delta++;
-			}
-			if (delta < eps)
 				flag = true;
-
-			for (int i = 0; i < 784; i++)
-			{
-				data[i] = ndata[i];
 			}
+			data = ndata;
 
 			counter++;
-			if (counter >= 30)
+			if (counter >= MAX_ITERATIONS)
 			{
-				cout << "\nFailed!\n";
 				break;
 			}
-		}
-
-		cout << endl << counter << endl;
-	}
-
-	void Normalize(vector<int> &data)
-	{
-		for (int i = 0; i < data.size(); i++)
-		{
-			if (data[i] > 0)
-				data[i] = 1;
-			else if (data[i] < 0)
-				data[i] = -1;
-			else
-				data[i] = 0;
 		}
 	}
 }

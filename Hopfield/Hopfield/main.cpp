@@ -10,43 +10,43 @@ using namespace std;
 using namespace network;
 
 void show(uchar**, int);
-void show(vector<vector<int>>&);
-void show(vector<vector<int>>&,int = -1);
-void show(vector < vector<double> >&);
+template<typename T>
+void show(vector<vector<T>>&);
+template<typename T>
+void show(vector<vector<T>>&,int);
 
 int main()
 {
-	int imSize = 28, exImageAmount = 100, exLabelsAmount = 100, amountOfEx = 7;
-	int dataAmount = 0, dataLabelsAmount = 0, dataSize = 0, amountOfData = 1;
+	int exSize = 28, exImageAmount = 100, exLabelsAmount = 100, amountOfWorkingEx = 10;
+	int dataAmount = 0, dataLabelsAmount = 0, dataSize = 0, amountOfWorkingData = 5;
 
 	string exDataPath = "C:\\Users\\Dell\\Desktop\\Give\\Data\\t10k-images.idx3-ubyte";
 	string exLabelsPath = "C:\\Users\\Dell\\Desktop\\Give\\Data\\t10k-labels.idx1-ubyte";
 	string dataPath = "C:\\Users\\Dell\\Desktop\\Give\\Data\\train-images.idx3-ubyte";
 	string dataLabelsPath = "C:\\Users\\Dell\\Desktop\\Give\\Data\\train-labels.idx1-ubyte";
 
-	uchar** example = read_mnist_images(exDataPath, exImageAmount, imSize);
+	uchar** example = read_mnist_images(exDataPath, exImageAmount, exSize);
 	uchar* exampleLabels = read_mnist_labels(exLabelsPath, exLabelsAmount);
 	uchar** dataIm = read_mnist_images(dataPath, dataAmount, dataSize);
 	uchar* dataLabels = read_mnist_labels(dataLabelsPath, dataLabelsAmount);
 
 
-	cout << "Imported images - patterns: " << exImageAmount << " and imported labels: " << exLabelsAmount << ". 1 image contains: " << imSize << " pixels." << endl;
+	cout << "Imported images - patterns: " << exImageAmount << " and imported labels: " << exLabelsAmount << ". 1 image contains: " << exSize << " pixels." << endl;
 	cout << "Imported: " << dataAmount << " and labels: " << dataLabelsAmount << " . 1 image contains:" << dataSize << " pixels" << endl;
-
 
 	vector<vector<int>>exdata;
 	vector<vector<int>>data;
 	vector<vector<double>>weights;
 
-	cout << "Amounts of separated examples: " << amountOfEx << " , data: " << amountOfData << endl;
+	cout << "Amounts of separated examples: " << amountOfWorkingEx << " , data: " << amountOfWorkingData << endl;
 
-	SeparateData(example, exdata, amountOfEx);
-	SeparateData(dataIm, data, amountOfData);
+	SeparateData(example, exdata, amountOfWorkingEx, exSize);
+	SeparateData(dataIm, data, amountOfWorkingData, dataSize);
 
 	// +++++++++++++++++++++++++++++++++ STATISTICS ++++++++++++++++++++++++++++++++++++++++++++++++
 	int dataStat[10] = { 0 };
 	int exStat[10] = { 0 };
-	for (int i = 0; i < 100; i++)
+	for (int i = 0; i < amountOfWorkingEx; i++)
 	{
 		dataStat[(int)dataLabels[i]]++;
 		exStat[(int)exampleLabels[i]]++;
@@ -63,51 +63,41 @@ int main()
 		cout << i << ".(" << dataStat[i] << ")";
 	}
 	cout << endl;
+	// +++++++++++++++++++++++++++++++++++++++++++ Learning ++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-	// +++++++++++++++++++++++++++++++++++++++++++
 	cout << "Learning...\n";
 	unsigned int start_time = clock();
 
-	LearnMatrix(exdata, weights);
+	LearnMatrix(exdata, weights, exSize);
 
 	unsigned int end_time = clock();
 	unsigned int search_time = end_time - start_time;
-	cout << "Learning complete! Working time: " << search_time << "\n";
+	cout << "Learning complete! Working time: " << search_time << endl;
 
 
-	// +++++++++++++++++++++++++++++++++++++
+	// +++++++++++++++++++++++++++++++++++++ Executing ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-	// @@@@@@@@@@@@@@@@@
-
-	for (int i = 0; i < amountOfData; i++)
+	for (int i = 0; i < amountOfWorkingData; i++)
 	{
-		for (int j = 0; j < imSize; j++)
-		{
-			data[i][j] = exdata[i][j];
-		}
-	}
-
-	// @@@@@@@@@@@@@@@@
-
-	for (int i = 0; i < amountOfData; i++)
-	{
-		show(data, i);
-		cout << endl;
 		cout << "Executing...\n";
-
-		Execute(data[i], weights);
-
-		cout << "End.\n";
+		cout << "Before: \n";
 		show(data, i);
 		cout << endl;
-		cout << endl;
+
+		Execute(data[i], weights, dataSize);
+
+		cout << "After: \n";
+		show(data, i);
+		cout << "\n\n";
 	}
-	cout << "END OF WORK!\n\n\n";
-	for (int i = 0; i < amountOfEx; i++)
+	cout << "End.\n";
+
+
+	for (int i = 0; i < amountOfWorkingEx; i++)
 	{
 		delete[] example[i];
 	}
-	for (int i = 0; i < amountOfData; i++)
+	for (int i = 0; i < amountOfWorkingData; i++)
 	{
 		delete[] dataIm[i];
 	}
@@ -131,8 +121,8 @@ void show(uchar **arr, int amount)
 		}
 	}
 }
-
-void show(vector<vector<int>>&arr)
+template<typename T>
+void show(vector<vector<T>>&arr)
 {
 	for (int i = 0; i < arr.size(); i++)
 	{
@@ -141,10 +131,12 @@ void show(vector<vector<int>>&arr)
 			if (j % 28 == 0) cout << endl;
 			cout << arr[i][j];
 		}
+		cout << endl;
 	}
 }
 
-void show(vector<vector<int>> &arr, int index)
+template<typename T>
+void show(vector<vector<T>> &arr, int index)
 {
 	if (index < 0)
 		index = arr.size() - 1;
@@ -156,17 +148,5 @@ void show(vector<vector<int>> &arr, int index)
 	{
 		if (j % 28 == 0) cout << endl;
 		cout << arr[index][j];
-	}
-}
-
-void show(vector<vector<double>>&data)
-{
-	for (int i = 0; i < 784; i++)
-	{
-		for (int j = i; j < 784; j++)
-		{
-			cout << data[i][j];
-		}
-		cout << endl;
 	}
 }

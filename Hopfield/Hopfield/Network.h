@@ -5,29 +5,34 @@
 #include <vector>
 #include <thread>
 
+#define MAX_ITERATIONS 30
+
 using namespace std;
 
 namespace network
 {
-	const unsigned int eps = 5;
+	//const unsigned int eps = 5;
 
 
 	typedef unsigned char uchar;
 
 
-	uchar** read_mnist_images(string full_path, int& number_of_images, int& image_size);
+	uchar** read_mnist_images(string, int&, int&);
 
-	uchar* read_mnist_labels(string full_path, int& number_of_labels);
+	uchar* read_mnist_labels(string, int&);
 
-	void SeparateData(uchar**, vector<vector<int>>&lines, const int size);
+	// Normalizing input data
+	void SeparateData(uchar**, vector<vector<int>>&, const int, int);
 
-	void LearnMatrix(vector<vector<int>>&, vector<vector<double>>&);
+	// returns normalized sum
+	int GetSum(vector<double>&, vector<int>&);
 
-	void LearningCalc(vector<vector<int>>&, vector<vector<double>>&, int, int);
+	// training
+	void LearnMatrix(vector<vector<int>>&, vector<vector<double>>&, int);
 
-	void Execute(vector<int>&, vector<vector<double>>&);
+	// running
+	void Execute(vector<int>&, vector<vector<double>>&, int);
 
-	void Normalize(vector<int>&);
-
-	//bool CheckEqual()
+	// find appropriate image label int exampleData for result vector
+	//int FindAppropriate(vector<vector<int>> &exLabels, int dataLabel);
 }
