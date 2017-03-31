@@ -1,6 +1,0 @@
-﻿  Network.cpp
-c:\users\dell\desktop\give\labs\labwork3_2017\hopfield\hopfield\network.cpp(88): warning C4018: '<': signed/unsigned mismatch
-c:\users\dell\desktop\give\labs\labwork3_2017\hopfield\hopfield\network.cpp(110): warning C4018: '<': signed/unsigned mismatch
-c:\users\dell\desktop\give\labs\labwork3_2017\hopfield\hopfield\network.cpp(136): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-  Hopfield.vcxproj -> C:\Users\Dell\Desktop\Give\Labs\LabWork3_2017\Hopfield\Debug\Hopfield.exe
-  Hopfield.vcxproj -> C:\Users\Dell\Desktop\Give\Labs\LabWork3_2017\Hopfield\Debug\Hopfield.pdb (Full PDB)
